@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- 卡片相关颜色 -->
+    <color name="card_background">#1E1E1E</color> <!-- 深色背景 -->
+    <color name="card_border">#333333</color> <!-- 普通边框 -->
+    <color name="card_title">#FFFFFF</color> <!-- 标题文字颜色 -->
+    <color name="card_selected">#2196F3</color> <!-- 选中状态背景 -->
+    <color name="card_selected_border">#42A5F5</color> <!-- 选中状态边框 -->
+    <color name="card_pressed">#333333</color> <!-- 按下状态背景 -->
+    <color name="card_pressed_border">#444444</color> <!-- 按下状态边框 -->
+</resources>
