@@ -1,9 +1,11 @@
 package top.jixiejidiguan.yangshipin
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.pow
@@ -48,6 +50,7 @@ class ChannelListAdapter(
         return ChannelViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: ChannelViewHolder, position: Int) {
         val (title) = channels[position]
         holder.channelTitle.text = title
@@ -105,21 +108,11 @@ class ChannelListAdapter(
     fun getSelectedPosition(): Int = selectedPosition
 
     /**
-     * 获取当前选中的频道数据
-     */
-    fun getSelectedChannel(): Pair<String, String>? =
-        channels.getOrNull(selectedPosition)
-
-    /**
      * 获取指定位置的频道数据
      */
     fun getChannel(position: Int): Pair<String, String>? =
         channels.getOrNull(position)
 
-    /**
-     * 判断指定位置是否被选中
-     */
-    fun isSelected(position: Int): Boolean = position == selectedPosition
 
     /**
      * 清除选中状态（重置为 -1，表示无选中）
@@ -128,7 +121,5 @@ class ChannelListAdapter(
         val old = selectedPosition
         selectedPosition = -1
         notifyItemChanged(old)
-        // 仅在位置有效时调用滚动回调，避免无效位置导致闪退
-        // -1 表示无选中，不需要滚动
     }
 }

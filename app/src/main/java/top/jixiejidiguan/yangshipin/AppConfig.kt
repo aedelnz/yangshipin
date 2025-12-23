@@ -4,13 +4,10 @@ package top.jixiejidiguan.yangshipin
  * 应用配置类 - 管理频道URL等配置信息
  */
 object AppConfig {
-    /**
-     * 获取频道配置数据
-     * @return 频道名称到URL的映射
-     */
-    fun getData(): Map<String, String> {
-        return mapOf(
-
+    
+    // 缓存数据以提高性能，避免每次调用 getData() 都创建新的 Map
+    private val channelData: Map<String, String> by lazy {
+        linkedMapOf(
             "CCTV1" to "https://www.yangshipin.cn/tv/home?pid=600001859",
             "CCTV2" to "https://www.yangshipin.cn/tv/home?pid=600001800",
             "CCTV3" to "https://www.yangshipin.cn/tv/home?pid=600001801",
@@ -65,34 +62,35 @@ object AppConfig {
         )
     }
     
+    // 缓存 keys 列表
+    private val channelKeys: List<String> by lazy {
+        channelData.keys.toList()
+    }
+
+    /**
+     * 获取频道配置数据
+     */
+    fun getData(): Map<String, String> = channelData
+    
     /**
      * 根据索引获取频道URL
-     * @param index 频道索引
-     * @return 对应频道的URL，如果索引无效则返回默认URL
      */
     fun getUrlByIndex(index: Int): String {
-        val data = getData()
-        val keys = data.keys.toList()
-        return if (index in keys.indices) {
-            data[keys[index]] ?: getData()["CCTV1"]!!
+        return if (index in channelKeys.indices) {
+            channelData[channelKeys[index]] ?: ""
         } else {
-            getData()["CCTV1"]!!
+            channelData.values.first()
         }
     }
     
     /**
      * 根据索引获取频道标题
-     * @param index 频道索引
-     * @return 对应频道的标题，如果索引无效则返回默认标题
      */
     fun getChannelTitleByIndex(index: Int): String {
-        val data = getData()
-        val keys = data.keys.toList()
-        return if (index in keys.indices) {
-            keys[index]
+        return if (index in channelKeys.indices) {
+            channelKeys[index]
         } else {
-            "CCTV1"
+            channelKeys.first()
         }
     }
-
 }
