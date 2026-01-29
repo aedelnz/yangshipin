@@ -4,8 +4,8 @@ package top.jixiejidiguan.yangshipin
  * 应用配置类 - 管理频道URL等配置信息
  */
 object AppConfig {
-    
     // 缓存数据以提高性能，避免每次调用 getData() 都创建新的 Map
+    @get:JvmName("getChannelDataProp")
     private val channelData: Map<String, String> by lazy {
         linkedMapOf(
             "CCTV1" to "https://www.yangshipin.cn/tv/home?pid=600001859",
@@ -61,36 +61,8 @@ object AppConfig {
             "新疆卫视" to "https://www.yangshipin.cn/tv/home?pid=600152138"
         )
     }
-    
-    // 缓存 keys 列表
-    private val channelKeys: List<String> by lazy {
-        channelData.keys.toList()
-    }
 
-    /**
-     * 获取频道配置数据
-     */
-    fun getData(): Map<String, String> = channelData
-    
-    /**
-     * 根据索引获取频道URL
-     */
-    fun getUrlByIndex(index: Int): String {
-        return if (index in channelKeys.indices) {
-            channelData[channelKeys[index]] ?: ""
-        } else {
-            channelData.values.first()
-        }
-    }
-    
-    /**
-     * 根据索引获取频道标题
-     */
-    fun getChannelTitleByIndex(index: Int): String {
-        return if (index in channelKeys.indices) {
-            channelKeys[index]
-        } else {
-            channelKeys.first()
-        }
+    fun getChannelData(): Map<String, String> {
+        return channelData
     }
 }
