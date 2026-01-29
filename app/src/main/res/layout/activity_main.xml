@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
@@ -14,10 +12,13 @@
     </WebView>
 
     <LinearLayout
+        android:id="@+id/channel_sidebar"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:background="@color/design_default_color_on_primary"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:translationX="-240dp"
+        android:alpha="0">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/channel_recyclerview"

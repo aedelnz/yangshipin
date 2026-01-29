@@ -5,4 +5,6 @@
     android:layout_height="wrap_content"
     android:padding="16dp"
     android:textSize="16sp"
-    android:gravity="center_vertical" />
+    android:gravity="center_vertical"
+    android:backgroundTint="@color/channel_item_selector"
+    android:textColor="@color/channel_item_text_selector" />
