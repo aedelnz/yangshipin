@@ -12,6 +12,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var channelCard: CardView
     private lateinit var channelTitle: TextView
     private lateinit var currentTime: TextView
+    lateinit var cardReverse: CardView
+    private lateinit var checkBoxSwitching: CheckBox
+    private val preferencesManager by lazy {
+        PreferencesManager(this)
+    }
+    var isReverseSwitching = false
+    
+    fun saveBoolean(key: String, value: Boolean) {
+        preferencesManager.saveBoolean(key, value)
+    }
+    
+    fun saveInt(key: String, value: Int) {
+        preferencesManager.saveInt(key, value)
+    }
+    
+    fun getBoolean(key: String, defaultValue: Boolean): Boolean {
+        return preferencesManager.getBoolean(key, defaultValue)
+    }
+    
+    fun getInt(key: String, defaultValue: Int): Int {
+        return preferencesManager.getInt(key, defaultValue)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,17 +71,26 @@ class MainActivity : AppCompatActivity() {
         channelCard = findViewById(R.id.channel_card)
         channelTitle = findViewById(R.id.channel_title)
         currentTime = findViewById(R.id.current_time)
+        cardReverse = findViewById(R.id.card_reverse)
+        checkBoxSwitching = findViewById(R.id.checkBox_switching)
         
         channels = AppConfig.getChannelData().keys.toList()
+        // 确保currentChannelPosition在有效范围内
+        if (channels.isEmpty() || currentChannelPosition >= channels.size) {
+            currentChannelPosition = 0
+            saveInt("current_channel", currentChannelPosition)
+        }
         channelList = findViewById(R.id.channel_recyclerview)
         channelList.layoutManager = LinearLayoutManager(this)
         channelList.setHasFixedSize(true)
         channelList.setItemViewCacheSize(20)
         channelList.isNestedScrollingEnabled = false
         
-        val channelAdapter = ChannelAdapter(channels) { selectedChannel ->
+        val channelAdapter = ChannelAdapter(this, channels) { selectedChannel ->
             val url = AppConfig.getChannelData()[selectedChannel] ?: return@ChannelAdapter
             currentChannelPosition = channels.indexOf(selectedChannel)
+            // 保存值到SharedPreferences
+            saveInt("current_channel", currentChannelPosition)
             showChannelCard(selectedChannel)
             loadUrl(url)
             hideSidebar()
@@ -75,15 +107,31 @@ class MainActivity : AppCompatActivity() {
         })
         
         if (channels.isNotEmpty()) {
-            val defaultUrl = AppConfig.getChannelData()[channels[0]] ?: return
+            // 确保currentChannelPosition在有效范围内
+            if (currentChannelPosition >= channels.size) {
+                currentChannelPosition = 0
+                saveInt("current_channel", currentChannelPosition)
+            }
+            val defaultUrl = AppConfig.getChannelData()[channels[currentChannelPosition]] ?: return
             loadUrl(defaultUrl)
-            currentChannelPosition = 0
-            channelAdapter.setSelectedPosition(0)
+            channelAdapter.setSelectedPosition(currentChannelPosition)
         }
         setupWebView()
         gestureController = GestureController(this)
         remoteControlHandler = RemoteControlHandler(this)
         showSidebar()
+        
+        // 从PreferencesManager中读取保存的值
+        isReverseSwitching = getBoolean("reverse_switching", false)
+        checkBoxSwitching.isChecked = isReverseSwitching
+        // 从PreferencesManager中读取保存的频道位置
+        currentChannelPosition = getInt("current_channel", 0)
+        
+        checkBoxSwitching.setOnCheckedChangeListener { _, isChecked ->
+            isReverseSwitching = isChecked
+            // 保存值到SharedPreferences
+            saveBoolean("reverse_switching", isChecked)
+        }
     }
     
     fun showSidebar() {
@@ -92,12 +140,15 @@ class MainActivity : AppCompatActivity() {
             channelList.isEnabled = true
             channelList.requestFocus()
             handler.removeCallbacksAndMessages(null)
+            currentTime.text = getCurrentTime()
+            handler.postDelayed(updateTimeRunnable, 1000)
             handler.postDelayed({ hideSidebar() }, 3000)
         }
     }
     
     fun hideSidebar() {
         channelList.isEnabled = false
+        handler.removeCallbacksAndMessages(null)
         animateView(channelSidebar, -240f, 0f, 300, android.view.animation.AccelerateInterpolator()) { 
             channelSidebar.visibility = View.GONE
         }
@@ -122,6 +173,16 @@ class MainActivity : AppCompatActivity() {
     fun hideChannelCard() {
         handler.removeCallbacksAndMessages(null)
         animateView(channelCard, 0f, 0f, 300, android.view.animation.AccelerateInterpolator())
+    }
+    
+    fun showReverseCard() {
+        handler.removeCallbacksAndMessages(null)
+        animateView(cardReverse, 0f, 1f, 300, android.view.animation.DecelerateInterpolator())
+    }
+    
+    fun hideReverseCard() {
+        handler.removeCallbacksAndMessages(null)
+        animateView(cardReverse, 0f, 0f, 300, android.view.animation.AccelerateInterpolator())
     }
     
     private fun animateView(view: View, translationX: Float, alpha: Float, duration: Long, interpolator: android.view.animation.Interpolator, action: (() -> Unit)? = null) {

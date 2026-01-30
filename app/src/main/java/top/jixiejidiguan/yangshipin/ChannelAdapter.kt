@@ -7,11 +7,25 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 
 class ChannelAdapter(
+    private val context: android.content.Context,
     private val channelList: List<String>,
     private val onItemClick: (String) -> Unit
 ) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
 
+    private val preferencesManager by lazy {
+        PreferencesManager(context)
+    }
     private var selectedPosition = 0
+    
+    init {
+        // 从PreferencesManager中读取保存的值
+        selectedPosition = preferencesManager.getInt("selected_channel", 0)
+        // 确保selectedPosition在有效范围内
+        if (channelList.isEmpty() || selectedPosition >= channelList.size) {
+            selectedPosition = 0
+            preferencesManager.saveInt("selected_channel", selectedPosition)
+        }
+    }
 
     class ChannelViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_channel, parent, false)
@@ -39,10 +53,16 @@ class ChannelAdapter(
     override fun getItemCount() = channelList.size
 
     fun setSelectedPosition(position: Int) {
-        if (position in channelList.indices && position != selectedPosition) {
+        if (channelList.isEmpty()) return
+        
+        val validPosition = if (position in channelList.indices) position else 0
+        
+        if (validPosition != selectedPosition) {
             notifyItemChanged(selectedPosition)
-            selectedPosition = position
+            selectedPosition = validPosition
             notifyItemChanged(selectedPosition)
+            // 保存值到PreferencesManager
+            preferencesManager.saveInt("selected_channel", validPosition)
         }
     }
 

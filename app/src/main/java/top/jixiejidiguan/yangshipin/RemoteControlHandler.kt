@@ -9,12 +9,22 @@ class RemoteControlHandler(private val activity: MainActivity) {
         if (event.action != KeyEvent.ACTION_DOWN) return false
         
         return when (event.keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP -> handleDpadUp()
-            KeyEvent.KEYCODE_DPAD_DOWN -> handleDpadDown()
+            KeyEvent.KEYCODE_DPAD_UP -> if (activity.isReverseSwitching) handleDpadDown() else handleDpadUp()
+            KeyEvent.KEYCODE_DPAD_DOWN -> if (activity.isReverseSwitching) handleDpadUp() else handleDpadDown()
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> handleConfirm()
             KeyEvent.KEYCODE_BACK -> handleBack()
+            KeyEvent.KEYCODE_MENU -> handleMenu()
             else -> false
         }
+    }
+    
+    private fun handleMenu(): Boolean {
+        if (activity.cardReverse.alpha == 1f) {
+            activity.hideReverseCard()
+        } else {
+            activity.showReverseCard()
+        }
+        return true
     }
     
     private fun handleDpadUp(): Boolean {
@@ -27,7 +37,11 @@ class RemoteControlHandler(private val activity: MainActivity) {
             updateSidebarSelection(newPosition, channelAdapter)
             return true
         } else {
-            val newPosition = (activity.currentChannelPosition - 1 + activity.channels.size) % activity.channels.size
+            val newPosition = if (activity.isReverseSwitching) {
+                (activity.currentChannelPosition + 1) % activity.channels.size
+            } else {
+                (activity.currentChannelPosition - 1 + activity.channels.size) % activity.channels.size
+            }
             switchChannel(newPosition)
             return true
         }
@@ -43,7 +57,11 @@ class RemoteControlHandler(private val activity: MainActivity) {
             updateSidebarSelection(newPosition, channelAdapter)
             return true
         } else {
-            val newPosition = (activity.currentChannelPosition + 1) % activity.channels.size
+            val newPosition = if (activity.isReverseSwitching) {
+                (activity.currentChannelPosition - 1 + activity.channels.size) % activity.channels.size
+            } else {
+                (activity.currentChannelPosition + 1) % activity.channels.size
+            }
             switchChannel(newPosition)
             return true
         }
@@ -61,6 +79,9 @@ class RemoteControlHandler(private val activity: MainActivity) {
     
     private fun switchChannel(newPosition: Int) {
         activity.currentChannelPosition = newPosition
+        // 保存值到SharedPreferences
+        activity.saveInt("current_channel", newPosition)
+        
         val channelAdapter = activity.channelList.adapter as? ChannelAdapter
         channelAdapter?.setSelectedPosition(newPosition)
         
@@ -95,8 +116,10 @@ class RemoteControlHandler(private val activity: MainActivity) {
         if (activity.channelSidebar.isVisible) {
             activity.hideSidebar()
             return true
+        } else {
+            handleMenu()
+            return false
         }
-        return false
     }
     
     private fun getCurrentSelectedPosition(adapter: ChannelAdapter): Int {

@@ -16,9 +16,9 @@
         android:id="@+id/channel_sidebar"
         android:layout_width="220dp"
         android:layout_height="match_parent"
+        android:alpha="0"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:alpha="0">
+        android:padding="16dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/channel_recyclerview"
@@ -33,8 +33,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:alpha="0"
-        app:cardBackgroundColor="?android:attr/textColorSecondaryNoDisable"
-        app:cardCornerRadius="?attr/actionBarSize"
         android:layout_margin="16dp">
 
         <LinearLayout
@@ -50,17 +48,45 @@
                 android:id="@+id/channel_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/colorSurface"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/current_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorSurfaceContainer"/>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_reverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:alpha="0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <CheckBox
+                    android:id="@+id/checkBox_switching"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/enable_switching" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </FrameLayout>

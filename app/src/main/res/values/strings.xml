@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">央视频 R</string>
+    <string name="enable_switching">是否开启反向频道切换</string>
 </resources>
