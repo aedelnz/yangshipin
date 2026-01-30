@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tvChannelName"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    app:cardBackgroundColor="?android:attr/colorBackground"
-    app:cardCornerRadius="0dp"
-    app:strokeWidth="2dp">
-
-
-    <TextView
-        android:id="@+id/tvChannelName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:text="@string/app_name"
-        android:textColor="@color/channel_item_text_selector"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-</com.google.android.material.card.MaterialCardView>
+    android:backgroundTint="?android:attr/textColorSecondaryNoDisable"
+    android:gravity="center_vertical"
+    android:padding="16dp"
+    android:text="@string/app_name"
+    android:textColor="@color/channel_item_text_selector"
+    app:cornerRadius="?attr/actionBarSize" />

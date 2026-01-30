@@ -12,33 +12,44 @@ class GestureController(
     val gestureDetector: GestureDetector by lazy {
         GestureDetector(activity, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                if (e1 != null) {
-                    val deltaX = abs(e2.x - e1.x)
-                    val deltaY = abs(e2.y - e1.y)
+                e1 ?: return super.onFling(e1, e2, velocityX, velocityY)
+                
+                val deltaX = abs(e2.x - e1.x)
+                val deltaY = abs(e2.y - e1.y)
+                
+                if (deltaX > deltaY) {
+                    // 水平滑动
+                    if (e2.x - e1.x > 100 && abs(velocityX) > 100) {
+                        activity.showSidebar()
+                        return true
+                    }
+                    if (e1.x - e2.x > 100 && abs(velocityX) > 100) {
+                        activity.hideSidebar()
+                        return true
+                    }
+                } else if (activity.channelSidebar.visibility != View.VISIBLE) {
+                    // 垂直滑动且侧边栏不可见时切换频道
+                    val deltaY = e2.y - e1.y
                     
-                    // 优先检测左右滑动手势（水平方向）
-                    if (deltaX > deltaY) {
-                        // 右滑手势：从左向右滑动，显示侧边栏
-                        if (e2.x - e1.x > 100 && abs(velocityX) > 100) {
-                            activity.showSidebar()
-                            return true
+                    if (abs(deltaY) > 100 && abs(velocityY) > 100) {
+                        val channelAdapter = activity.channelList.adapter as? ChannelAdapter ?: return false
+                        val channelCount = activity.channels.size
+                        
+                        activity.currentChannelPosition = when {
+                            deltaY > 0 -> (activity.currentChannelPosition + 1) % channelCount
+                            else -> (activity.currentChannelPosition - 1 + channelCount) % channelCount
                         }
-                        // 左滑手势：从右向左滑动，隐藏侧边栏
-                        if (e1.x - e2.x > 100 && abs(velocityX) > 100) {
-                            activity.hideSidebar()
-                            return true
-                        }
-                    } else {
-                        // 只有当侧边栏不可见时，才执行上下滑动切换频道的逻辑
-                        if (activity.channelSidebar.visibility != View.VISIBLE) {
-                            // 上下滑动手势（垂直方向），切换频道
-                            val handled = activity.handleVerticalSwipe(e1, e2, velocityY)
-                            if (handled) {
-                                return true
-                            }
-                        }
+                        
+                        val currentChannel = activity.channels[activity.currentChannelPosition]
+                        channelAdapter.setSelectedPosition(activity.currentChannelPosition)
+                        activity.showChannelCard(currentChannel)
+                        
+                        val url = AppConfig.getChannelData()[currentChannel] ?: return true
+                        activity.loadUrl(url)
+                        return true
                     }
                 }
+                
                 return super.onFling(e1, e2, velocityX, velocityY)
             }
         })

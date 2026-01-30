@@ -17,7 +17,6 @@
         android:layout_width="220dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="?android:attr/colorBackground"
         android:padding="16dp"
         android:alpha="0">
 
@@ -34,29 +33,34 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:alpha="0"
-        app:cardBackgroundColor="?android:attr/colorBackground"
-        app:cardCornerRadius="24dp"
+        app:cardBackgroundColor="?android:attr/textColorSecondaryNoDisable"
+        app:cardCornerRadius="?attr/actionBarSize"
         android:layout_margin="16dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="32dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="?attr/actionBarSize"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/channel_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="26sp" />
+                android:textColor="?attr/colorSurface"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                android:textColor="?attr/colorSurfaceContainer"/>
 
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

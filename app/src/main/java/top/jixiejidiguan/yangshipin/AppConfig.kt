@@ -4,8 +4,7 @@ package top.jixiejidiguan.yangshipin
  * 应用配置类 - 管理频道URL等配置信息
  */
 object AppConfig {
-    @get:JvmName("getChannelDataProp")
-    private val channelData: Map<String, String> by lazy {
+    private val _channelData: Map<String, String> by lazy {
         linkedMapOf(
             "CCTV1" to "https://www.yangshipin.cn/tv/home?pid=600001859",
             "CCTV2" to "https://www.yangshipin.cn/tv/home?pid=600001800",
@@ -60,8 +59,7 @@ object AppConfig {
             "新疆卫视" to "https://www.yangshipin.cn/tv/home?pid=600152138"
         )
     }
-
     fun getChannelData(): Map<String, String> {
-        return channelData
+        return _channelData
     }
 }
