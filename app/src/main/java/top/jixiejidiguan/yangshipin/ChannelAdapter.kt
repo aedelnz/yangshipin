@@ -6,48 +6,38 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-
 @Suppress("DEPRECATION")
-class ChannelAdapter(
-    private val channelList: List<String>,
-    private val onItemClick: (String) -> Unit // 点击回调，返回选中的频道名称
-) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
+class ChannelAdapter(private val channelList: List<String>, private val onItemClick: (String) -> Unit) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
 
     private var selectedPosition = 0 // 当前选中的位置
 
-    // 视图持有者，绑定item布局的控件
-    class ChannelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvChannelName: TextView = itemView.findViewById(R.id.tvChannelName)
-    }
+    class ChannelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) { val tvChannelName: TextView = itemView.findViewById(R.id.tvChannelName) }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelViewHolder {
-        // 加载item布局（自定义布局item_channel.xml，也可替换为android.R.layout.simple_list_item_1）
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_channel, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_channel, parent, false)
         val holder = ChannelViewHolder(view)
-        // 设置item点击事件，触发回调
         holder.itemView.setOnClickListener {
             val position = holder.adapterPosition
             if (position != RecyclerView.NO_POSITION) { // 防止位置无效
-                // 更新选中位置
                 val previousPosition = selectedPosition
                 selectedPosition = position
-                // 刷新之前选中的item
                 notifyItemChanged(previousPosition)
-                // 刷新当前选中的item
                 notifyItemChanged(selectedPosition)
-                // 触发回调
                 onItemClick(channelList[position])
             }
         }
         return holder
     }
-
+// 更新选择高亮
     override fun onBindViewHolder(holder: ChannelViewHolder, position: Int) {
-        // 绑定数据：设置频道名称
         holder.tvChannelName.text = channelList[position]
-        // 设置选中状态
-        holder.itemView.isSelected = (position == selectedPosition)
+        val isSelected = (position == selectedPosition)
+        holder.itemView.isSelected = isSelected
+        if (isSelected) {
+            holder.tvChannelName.textSize = 32f
+        } else {
+            holder.tvChannelName.textSize = 24f
+        }
     }
 
     // 返回数据总数
@@ -60,6 +50,15 @@ class ChannelAdapter(
             selectedPosition = position
             notifyItemChanged(previousPosition)
             notifyItemChanged(selectedPosition)
+            if (previousPosition > 0) notifyItemChanged(previousPosition - 1)
+            if (previousPosition < channelList.size - 1) notifyItemChanged(previousPosition + 1)
+            if (selectedPosition > 0) notifyItemChanged(selectedPosition - 1)
+            if (selectedPosition < channelList.size - 1) notifyItemChanged(selectedPosition + 1)
         }
+    }
+
+    // 获取当前选中位置
+    fun getSelectedPosition(): Int {
+        return selectedPosition
     }
 }

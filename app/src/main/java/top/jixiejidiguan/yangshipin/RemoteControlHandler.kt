@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 
 private const val TAG = "RemoteControlHandler"
 
@@ -24,45 +25,35 @@ class RemoteControlHandler(
      * @return Boolean 返回 true 表示事件已处理，false 表示事件未处理
      */
     fun handleKeyEvent(event: KeyEvent): Boolean {
-        Log.d(TAG, "handleKeyEvent 被调用: action=${event.action}, keyCode=${event.keyCode}")
         // 只处理按键按下事件，忽略按键抬起事件
         if (event.action == KeyEvent.ACTION_DOWN) {
-            Log.d(TAG, "处理 ACTION_DOWN 事件: keyCode=${event.keyCode}")
             when (event.keyCode) {
                 // 上方向键
                 KeyEvent.KEYCODE_DPAD_UP -> {
-                    Log.d(TAG, "处理上方向键事件")
                     return handleDpadUp()
                 }
                 // 下方向键
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    Log.d(TAG, "处理下方向键事件")
                     return handleDpadDown()
                 }
                 // 确认键（包括多种确认键类型）
                 KeyEvent.KEYCODE_DPAD_CENTER -> {
-                    Log.d(TAG, "处理确认键事件 (DPAD_CENTER)")
                     return handleConfirm()
                 }
                 KeyEvent.KEYCODE_ENTER -> {
-                    Log.d(TAG, "处理确认键事件 (ENTER)")
                     return handleConfirm()
                 }
                 KeyEvent.KEYCODE_NUMPAD_ENTER -> {
-                    Log.d(TAG, "处理确认键事件 (NUMPAD_ENTER)")
                     return handleConfirm()
                 }
                 // 返回键
                 KeyEvent.KEYCODE_BACK -> {
-                    Log.d(TAG, "处理返回键事件")
                     return handleBack()
                 }
                 else -> {
-                    Log.d(TAG, "未处理的按键事件: keyCode=${event.keyCode}")
+                    return false
                 }
             }
-        } else {
-            Log.d(TAG, "忽略非 ACTION_DOWN 事件: action=${event.action}")
         }
         // 事件未处理
         return false
@@ -70,36 +61,32 @@ class RemoteControlHandler(
     
     /**
      * 处理上方向键事件
-     * 
      * @return Boolean 返回 true 表示事件已处理，false 表示事件未处理
      */
     @SuppressLint("UseKtx")
     private fun handleDpadUp(): Boolean {
         if (activity.channelSidebar.visibility == View.VISIBLE) {
-            // 侧边栏显示时，上下键用于预选频道
-            Log.d(TAG, "侧边栏显示，上键预选频道")
             val channelAdapter = activity.channelList.adapter as? ChannelAdapter
             if (channelAdapter != null) {
                 val currentPosition = getCurrentSelectedPosition(channelAdapter)
                 val channelCount = activity.channels.size
-                // 实现无限循环：当到达第一个频道时，循环到最后一个
                 val newPosition = if (currentPosition > 0) {
                     currentPosition - 1
                 } else {
                     channelCount - 1 // 循环到最后一个频道
                 }
-                Log.d(TAG, "预选频道：从位置 $currentPosition 移动到 $newPosition")
                 // 更新选中位置
                 channelAdapter.setSelectedPosition(newPosition)
-                // 平滑滚动到新位置
-                activity.channelList.smoothScrollToPosition(newPosition)
+                // 同步更新 activity 中的当前频道位置
+                activity.currentChannelPosition = newPosition
+                // 优化滚动：使用平滑滚动，并确保新位置在可见区域中央
+                val layoutManager = activity.channelList.layoutManager as? LinearLayoutManager
+                layoutManager?.scrollToPositionWithOffset(newPosition, 100) // 100px 偏移，使选中项更居中
                 // 重置自动隐藏计时器，确保用户操作时不隐藏
                 resetSidebarHideTimer()
                 return true
             }
         } else {
-            // 侧边栏隐藏时，上下键用于切换频道
-            Log.d(TAG, "侧边栏隐藏，上键切换频道")
             val channelCount = activity.channels.size
             // 实现无限循环：当到达第一个频道时，循环到最后一个
             val newPosition = if (activity.currentChannelPosition > 0) {
@@ -150,8 +137,11 @@ class RemoteControlHandler(
                 Log.d(TAG, "预选频道：从位置 $currentPosition 移动到 $newPosition")
                 // 更新选中位置
                 channelAdapter.setSelectedPosition(newPosition)
-                // 平滑滚动到新位置
-                activity.channelList.smoothScrollToPosition(newPosition)
+                // 同步更新 activity 中的当前频道位置
+                activity.currentChannelPosition = newPosition
+                // 优化滚动：使用平滑滚动，并确保新位置在可见区域中央
+                val layoutManager = activity.channelList.layoutManager as? LinearLayoutManager
+                layoutManager?.scrollToPositionWithOffset(newPosition, 100) // 100px 偏移，使选中项更居中
                 // 重置自动隐藏计时器，确保用户操作时不隐藏
                 resetSidebarHideTimer()
                 return true
@@ -268,18 +258,7 @@ class RemoteControlHandler(
      * @return Int 当前选中的位置索引，默认返回 0
      */
     private fun getCurrentSelectedPosition(adapter: ChannelAdapter): Int {
-        // 通过反射获取 ChannelAdapter 中的 selectedPosition 字段
-        try {
-            val field = adapter.javaClass.getDeclaredField("selectedPosition")
-            // 设置字段为可访问
-            field.isAccessible = true
-            // 返回字段值
-            return field.getInt(adapter)
-        } catch (e: Exception) {
-            // 发生异常时打印堆栈信息
-            e.printStackTrace()
-        }
-        // 发生异常时返回默认值 0
-        return 0
+        // 使用公共方法获取选中位置，替代反射操作
+        return adapter.getSelectedPosition()
     }
 }

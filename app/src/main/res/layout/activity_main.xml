@@ -14,11 +14,11 @@
 
     <LinearLayout
         android:id="@+id/channel_sidebar"
-        android:layout_width="240dp"
+        android:layout_width="220dp"
         android:layout_height="match_parent"
-        android:background="@color/design_default_color_on_primary"
         android:orientation="vertical"
-        android:translationX="-240dp"
+        android:background="?android:attr/colorBackground"
+        android:padding="16dp"
         android:alpha="0">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -28,44 +28,35 @@
 
     </LinearLayout>
 
-    <!-- 频道切换卡片 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/channel_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|end"
         android:alpha="0"
-        android:background="@color/design_default_color_on_primary"
-        android:elevation="10dp"
-        android:gravity="center"
-        app:cardCornerRadius="16dp">
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="24dp"
+        android:layout_margin="16dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:orientation="vertical"
-            android:gravity="center"
             android:padding="16dp">
 
             <TextView
                 android:id="@+id/channel_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@color/black"
-                android:textSize="36sp" />
+                android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/black"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

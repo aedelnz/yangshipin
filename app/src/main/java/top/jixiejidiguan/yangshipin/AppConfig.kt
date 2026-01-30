@@ -4,7 +4,6 @@ package top.jixiejidiguan.yangshipin
  * 应用配置类 - 管理频道URL等配置信息
  */
 object AppConfig {
-    // 缓存数据以提高性能，避免每次调用 getData() 都创建新的 Map
     @get:JvmName("getChannelDataProp")
     private val channelData: Map<String, String> by lazy {
         linkedMapOf(
