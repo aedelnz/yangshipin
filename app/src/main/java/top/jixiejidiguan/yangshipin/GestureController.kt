@@ -46,10 +46,7 @@ class GestureController(
                                 (activity.currentChannelPosition - 1 + channelCount) % channelCount
                             }
                         }
-                        
-                        // 保存值到SharedPreferences
-                        activity.saveInt("current_channel", activity.currentChannelPosition)
-                        
+
                         val currentChannel = activity.channels[activity.currentChannelPosition]
                         channelAdapter.setSelectedPosition(activity.currentChannelPosition)
                         activity.showChannelCard(currentChannel)
@@ -62,12 +59,21 @@ class GestureController(
                 
                 return super.onFling(e1, e2, velocityX, velocityY)
             }
-            
+
+            /**
+             * 当用户在屏幕上快速双击时触发
+             *
+             * @param e 触摸事件对象，包含坐标等信息
+             * @return 返回 true 表示该双击事件已被成功处理
+             */
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                // 双击打开/关闭反向频道切换设置面板
+                // 逻辑：通过判断透明度 (Alpha) 来检测“反向频道切换设置面板”当前是否显示
+                // 1f 表示完全显示（不透明）
                 if (activity.cardReverse.alpha == 1f) {
+                    // 如果面板当前是显示的，则执行隐藏操作
                     activity.hideReverseCard()
                 } else {
+                    // 如果面板当前是隐藏的（alpha 通常为 0），则执行显示操作
                     activity.showReverseCard()
                 }
                 return true
