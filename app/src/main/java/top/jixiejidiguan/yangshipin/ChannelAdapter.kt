@@ -41,9 +41,7 @@ class ChannelAdapter(
 
     fun setSelectedPosition(position: Int) {
         if (channelList.isEmpty()) return
-        
         val validPosition = if (position in channelList.indices) position else 0
-        
         if (validPosition != selectedPosition) {
             notifyItemChanged(selectedPosition)
             selectedPosition = validPosition

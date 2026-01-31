@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     }
     private lateinit var gestureController: GestureController
     private lateinit var remoteControlHandler: RemoteControlHandler
-    var currentChannelPosition = 0
     lateinit var channels: List<String>
     private lateinit var channelCard: CardView
     private lateinit var channelTitle: TextView
@@ -44,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         PreferencesManager(this)
     }
     var isReverseSwitching = false
+    var currentChannelPosition = 6
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
