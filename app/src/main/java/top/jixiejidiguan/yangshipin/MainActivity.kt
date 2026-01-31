@@ -25,8 +25,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     lateinit var channelSidebar: LinearLayout
     lateinit var channelList: RecyclerView
-    private var customView: View? = null
-    private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     private val handler = Handler(Looper.getMainLooper())
     
     fun resetSidebarHideTimer() {
@@ -247,16 +245,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 封装的加载 URL 方法
+     * 确保在加载新页面前，清理旧页面的状态
+     */
     fun loadUrl(url: String) {
         webView.clearCache(false)
         webView.clearHistory()
-        if (customView != null) {
-            customViewCallback?.onCustomViewHidden()
-            customView = null
-        }
         webView.loadUrl(url)
     }
-
 
     /**
      * 当 Activity 销毁时调用
