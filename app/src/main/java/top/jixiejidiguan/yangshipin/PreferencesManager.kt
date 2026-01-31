@@ -9,6 +9,7 @@ import androidx.core.content.edit
  *
  * @property context 上下文对象，用于获取 SharedPreferences 实例
  */
+@Suppress("unused")
 class PreferencesManager(private val context: Context) {
 
     // 使用 lazy 懒加载模式初始化 SharedPreferences

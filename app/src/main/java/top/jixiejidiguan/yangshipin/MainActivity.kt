@@ -91,16 +91,19 @@ class MainActivity : AppCompatActivity() {
         remoteControlHandler = RemoteControlHandler(this)
         showSidebar()
         
-        // 是否开启反向频道切换
+        // 读取是否开启反向频道切换
         isReverseSwitching = preferencesManager.getBoolean("reverse_switching", false)
         checkBoxSwitching.isChecked = isReverseSwitching
-        // 点击开启或关闭
+        // 点击是否开启反向频道切换
         checkBoxSwitching.setOnCheckedChangeListener { _, isChecked ->
             isReverseSwitching = isChecked
             preferencesManager.saveBoolean("reverse_switching", isChecked)
         }
     }
-    
+
+    /**
+     * 显示频道列表
+     */
     fun showSidebar() {
         animateView(channelSidebar, 0f, 1f, 300, android.view.animation.DecelerateInterpolator()) { 
             channelSidebar.visibility = View.VISIBLE
