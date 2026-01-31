@@ -73,11 +73,7 @@ class MainActivity : AppCompatActivity() {
         checkBoxSwitching = findViewById(R.id.checkBox_switching)
         
         channels = AppConfig.getChannelData().keys.toList()
-        // 确保currentChannelPosition在有效范围内
-        if (channels.isEmpty() || currentChannelPosition >= channels.size) {
-            currentChannelPosition = 0
-            saveInt("current_channel", currentChannelPosition)
-        }
+
         channelList = findViewById(R.id.channel_recyclerview)
         channelList.layoutManager = LinearLayoutManager(this)
         channelList.setHasFixedSize(true)
@@ -86,9 +82,6 @@ class MainActivity : AppCompatActivity() {
         
         val channelAdapter = ChannelAdapter(this, channels) { selectedChannel ->
             val url = AppConfig.getChannelData()[selectedChannel] ?: return@ChannelAdapter
-            currentChannelPosition = channels.indexOf(selectedChannel)
-            // 保存值到SharedPreferences
-            saveInt("current_channel", currentChannelPosition)
             showChannelCard(selectedChannel)
             loadUrl(url)
             hideSidebar()
@@ -105,11 +98,6 @@ class MainActivity : AppCompatActivity() {
         })
         
         if (channels.isNotEmpty()) {
-            // 确保currentChannelPosition在有效范围内
-            if (currentChannelPosition >= channels.size) {
-                currentChannelPosition = 0
-                saveInt("current_channel", currentChannelPosition)
-            }
             val defaultUrl = AppConfig.getChannelData()[channels[currentChannelPosition]] ?: return
             loadUrl(defaultUrl)
             channelAdapter.setSelectedPosition(currentChannelPosition)
@@ -119,15 +107,12 @@ class MainActivity : AppCompatActivity() {
         remoteControlHandler = RemoteControlHandler(this)
         showSidebar()
         
-        // 从PreferencesManager中读取保存的值
+        // 是否开启反向频道切换
         isReverseSwitching = getBoolean("reverse_switching", false)
         checkBoxSwitching.isChecked = isReverseSwitching
-        // 从PreferencesManager中读取保存的频道位置
-        currentChannelPosition = getInt("current_channel", 0)
-        
+        // 点击开启或关闭
         checkBoxSwitching.setOnCheckedChangeListener { _, isChecked ->
             isReverseSwitching = isChecked
-            // 保存值到SharedPreferences
             saveBoolean("reverse_switching", isChecked)
         }
     }
@@ -198,7 +183,8 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) View.LAYER_TYPE_HARDWARE else View.LAYER_TYPE_SOFTWARE,
             null
         )
-        
+
+        // 浏览器配置
         val settings = webView.settings
         settings.apply {
             javaScriptEnabled = true
@@ -212,18 +198,16 @@ class MainActivity : AppCompatActivity() {
             displayZoomControls = false
             setSupportZoom(false)
             layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
-            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             }
-            
             allowContentAccess = true
             allowFileAccess = false
         }
-
         webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
         webView.isHorizontalScrollBarEnabled = true
 
+        // js 注入
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 val jsCode = """(function(){window.androidPlayer={makeFullscreen:function(){const s=document.createElement('style');s.innerHTML='body,html{overflow:hidden!important;background:#000!important;}video{position:fixed!important;top:0;left:0;width:100vw!important;height:100vh!important;object-fit:contain!important;z-index:99999!important;background:#000!important;}';document.head.appendChild(s)},getVideo:function(){return document.querySelector('video')||null},togglePlay:function(){const v=this.getVideo();if(v){v.paused?v.play():this.makeFullscreen()}}};(function(){let t=null,c=0;t=setInterval(()=>{c++;const v=document.querySelector('video');if(v||c>=15){clearInterval(t);if(v){v.muted=false;window.androidPlayer.togglePlay()}}},1e3)})()})();""".trimIndent()
@@ -235,8 +219,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-        @Suppress("DEPRECATION")
+        // 彻底禁用 WebView 的所有用户交互功能
         webView.apply {
             isClickable = false
             isFocusable = false
