@@ -44,22 +44,6 @@ class MainActivity : AppCompatActivity() {
         PreferencesManager(this)
     }
     var isReverseSwitching = false
-    
-    fun saveBoolean(key: String, value: Boolean) {
-        preferencesManager.saveBoolean(key, value)
-    }
-    
-    fun saveInt(key: String, value: Int) {
-        preferencesManager.saveInt(key, value)
-    }
-    
-    fun getBoolean(key: String, defaultValue: Boolean): Boolean {
-        return preferencesManager.getBoolean(key, defaultValue)
-    }
-    
-    fun getInt(key: String, defaultValue: Int): Int {
-        return preferencesManager.getInt(key, defaultValue)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,12 +92,12 @@ class MainActivity : AppCompatActivity() {
         showSidebar()
         
         // 是否开启反向频道切换
-        isReverseSwitching = getBoolean("reverse_switching", false)
+        isReverseSwitching = preferencesManager.getBoolean("reverse_switching", false)
         checkBoxSwitching.isChecked = isReverseSwitching
         // 点击开启或关闭
         checkBoxSwitching.setOnCheckedChangeListener { _, isChecked ->
             isReverseSwitching = isChecked
-            saveBoolean("reverse_switching", isChecked)
+            preferencesManager.saveBoolean("reverse_switching", isChecked)
         }
     }
     

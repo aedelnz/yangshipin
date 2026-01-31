@@ -79,8 +79,7 @@ class RemoteControlHandler(private val activity: MainActivity) {
     
     private fun switchChannel(newPosition: Int) {
         activity.currentChannelPosition = newPosition
-        // 保存值到SharedPreferences
-        activity.saveInt("current_channel", newPosition)
+
         
         val channelAdapter = activity.channelList.adapter as? ChannelAdapter
         channelAdapter?.setSelectedPosition(newPosition)
@@ -116,10 +115,8 @@ class RemoteControlHandler(private val activity: MainActivity) {
         if (activity.channelSidebar.isVisible) {
             activity.hideSidebar()
             return true
-        } else {
-            handleMenu()
-            return false
         }
+        return false
     }
     
     private fun getCurrentSelectedPosition(adapter: ChannelAdapter): Int {
