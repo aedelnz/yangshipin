@@ -12,7 +12,14 @@ class ChannelAdapter(
     private val onItemClick: (String) -> Unit
 ) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
 
+    private val preferencesManager by lazy {
+        PreferencesManager(context)
+    }
     private var selectedPosition = 0
+
+    init {
+        selectedPosition = preferencesManager.getInt("selected_channel", 0)
+    }
 
     class ChannelViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_channel, parent, false)
@@ -41,7 +48,9 @@ class ChannelAdapter(
 
     fun setSelectedPosition(position: Int) {
         if (channelList.isEmpty()) return
+
         val validPosition = if (position in channelList.indices) position else 0
+
         if (validPosition != selectedPosition) {
             notifyItemChanged(selectedPosition)
             selectedPosition = validPosition
