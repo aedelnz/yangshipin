@@ -102,7 +102,6 @@ class RemoteControlHandler(private val activity: MainActivity) {
         } else {
             val channelAdapter = activity.channelList.adapter as? ChannelAdapter ?: return false
             val currentPosition = getCurrentSelectedPosition(channelAdapter)
-            
             if (currentPosition in activity.channels.indices) {
                 switchChannel(currentPosition)
                 activity.hideSidebar()
