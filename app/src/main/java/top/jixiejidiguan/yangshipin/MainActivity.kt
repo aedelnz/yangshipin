@@ -301,22 +301,40 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(url)
     }
 
-    @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
-    override fun onBackPressed() {
-        if (webView.canGoBack()) webView.goBack() else super.onBackPressed()
-    }
 
+    /**
+     * 当 Activity 销毁时调用
+     * 主要用于释放资源，防止内存泄漏
+     */
     override fun onDestroy() {
+        // 移除 Handler 中所有待执行的消息和回调
+        // 传入 null 代表移除全部，防止 Activity 销毁后异步任务还在运行导致崩溃
         handler.removeCallbacksAndMessages(null)
+        // 销毁 WebView 实例
+        // 必须显式调用，以释放内存、停止 Flash/JS 加载并解除与窗口系统的绑定
         webView.destroy()
+        // 调用父类的销毁逻辑
         super.onDestroy()
     }
-    
+
+    /**
+     * 分发按键事件
+     * 在按键到达具体的 View 之前进行拦截，常用于适配电视遥控器
+     *
+     * @param event 键盘事件（确认返回键跟上下键等）
+     * @return 如果返回 true，表示该事件已被处理，不再向下传递
+     */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         return remoteControlHandler.handleKeyEvent(event)
     }
-    
+
+    /**
+     * 分发屏幕触摸事件
+     * 在触摸事件传给子 View 之前进行拦截
+     *
+     * @param ev 触摸动作（上下左右滑动，双击屏幕等）
+     * @return 返回值遵循系统分发机制
+     */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         gestureController.gestureDetector.onTouchEvent(ev)
         return super.dispatchTouchEvent(ev)
