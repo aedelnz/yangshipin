@@ -46,11 +46,12 @@ class ChannelAdapter(
 
     override fun getItemCount() = channelList.size
 
+    /**
+     * 设置频道列表选择高亮
+     */
     fun setSelectedPosition(position: Int) {
         if (channelList.isEmpty()) return
-
         val validPosition = if (position in channelList.indices) position else 0
-
         if (validPosition != selectedPosition) {
             notifyItemChanged(selectedPosition)
             selectedPosition = validPosition
@@ -58,5 +59,8 @@ class ChannelAdapter(
         }
     }
 
+    /**
+     * 控制键写入频道列表高亮
+     */
     fun getSelectedPosition() = selectedPosition
 }

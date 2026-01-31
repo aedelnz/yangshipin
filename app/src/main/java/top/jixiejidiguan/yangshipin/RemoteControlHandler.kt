@@ -73,8 +73,8 @@ class RemoteControlHandler(private val activity: MainActivity) {
         
         val layoutManager = activity.channelList.layoutManager as? LinearLayoutManager
         layoutManager?.scrollToPositionWithOffset(newPosition, 100)
-        
-        resetSidebarHideTimer()
+
+        activity.resetSidebarHideTimer()
     }
     
     private fun switchChannel(newPosition: Int) {
@@ -90,11 +90,7 @@ class RemoteControlHandler(private val activity: MainActivity) {
         val url = AppConfig.getChannelData()[currentChannel] ?: return
         activity.loadUrl(url)
     }
-    
-    private fun resetSidebarHideTimer() {
-        activity.resetSidebarHideTimer()
-    }
-    
+
     private fun handleConfirm(): Boolean {
         return if (!activity.channelSidebar.isVisible) {
             activity.showSidebar()

@@ -1,6 +1,5 @@
 package top.jixiejidiguan.yangshipin
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -26,11 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var channelSidebar: LinearLayout
     lateinit var channelList: RecyclerView
     private val handler = Handler(Looper.getMainLooper())
-    
-    fun resetSidebarHideTimer() {
-        handler.removeCallbacksAndMessages(null)
-        handler.postDelayed({ hideSidebar() }, 3000)
-    }
+
     private lateinit var gestureController: GestureController
     private lateinit var remoteControlHandler: RemoteControlHandler
     lateinit var channels: List<String>
@@ -42,8 +37,10 @@ class MainActivity : AppCompatActivity() {
     private val preferencesManager by lazy {
         PreferencesManager(this)
     }
+    // 默认开启反向频道切换
     var isReverseSwitching = false
-    var currentChannelPosition = 6
+    // 默认选择频道序号
+    var currentChannelPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +112,12 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed({ hideSidebar() }, 3000)
         }
     }
-    
+
+    fun resetSidebarHideTimer() {
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({ hideSidebar() }, 3000)
+    }
+
     fun hideSidebar() {
         channelList.isEnabled = false
         handler.removeCallbacksAndMessages(null)
