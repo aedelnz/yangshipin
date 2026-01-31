@@ -28,8 +28,6 @@ class GestureController(
                         return true
                     }
                 } else if (activity.channelSidebar.visibility != View.VISIBLE) {
-                    // 垂直滑动且侧边栏不可见时切换频道
-                    val deltaY = e2.y - e1.y
                     
                     if (abs(deltaY) > 100 && abs(velocityY) > 100) {
                         val channelAdapter = activity.channelList.adapter as? ChannelAdapter ?: return false
