@@ -15,7 +15,7 @@ android {
         applicationId = "top.jixiejidiguan.yangshipin"
         minSdk = 22
         targetSdk = 36
-        versionCode = 4
+        versionCode = 5
         versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -59,6 +59,13 @@ object AppConfig {
             "新疆卫视" to "https://www.yangshipin.cn/tv/home?pid=600152138"
         )
     }
+
+    /**
+     * 获取所有频道数据
+     *
+     * @return 返回一个包含频道信息的只读 Map 集合。
+     *         键(Key)通常为频道名称或 ID，值(Value)通常为频道对应的地址或配置。
+     */
     fun getChannelData(): Map<String, String> {
         return _channelData
     }

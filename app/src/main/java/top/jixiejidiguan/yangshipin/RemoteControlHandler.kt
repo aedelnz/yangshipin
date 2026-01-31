@@ -13,7 +13,7 @@ class RemoteControlHandler(private val activity: MainActivity) {
             KeyEvent.KEYCODE_DPAD_DOWN -> if (activity.isReverseSwitching) handleDpadUp() else handleDpadDown()
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> handleConfirm()
             KeyEvent.KEYCODE_BACK -> handleBack()
-            KeyEvent.KEYCODE_MENU -> handleMenu()
+            KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_ESCAPE -> handleMenu()
             else -> false
         }
     }
